@@ -1,0 +1,70 @@
+package com.spring.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.spring.model.SurveyModel;
+import com.spring.serviceInterface.SurveyServiceInterface;
+
+@Controller
+public class HomeController {
+	@Autowired
+	SurveyServiceInterface surveyServiceInterface;
+	
+	@RequestMapping("/home")
+	public ModelAndView getHome(){
+		System.out.println("Home");
+		ModelAndView mav = new ModelAndView("home");
+		return mav;
+	}
+	
+	@RequestMapping(value = "/saveValue", method = RequestMethod.POST)
+	@ResponseBody
+	public String PressNoValue(
+			@RequestParam(value="datastring") String datastring) {
+		String [] entry = datastring.split("&");
+		for(String attr : entry){
+			SurveyModel model = new SurveyModel();
+			String[] seprateEntry = attr.split("=");
+			model.setIndex(seprateEntry[0]);
+			if(seprateEntry.length ==2)
+			{
+			model.setValue(seprateEntry[1]);
+			Character t = seprateEntry[0].charAt(0);
+			
+			if(t.equals('q')){
+				model.setType("Question");
+			}
+			if(t.equals('a')){
+				model.setType("Answer");
+			}
+			}
+			else{
+				return "Please Enter All Entries";
+			}
+			
+			surveyServiceInterface.save(model);
+			
+		}
+		
+		
+		/*JsonResponse js = new JsonResponse();
+		Object o1 = pressProductionService.pressMaster(pressNo);
+		js.setResult(o1);
+		//pressName1 = pressNo;
+		List<ProductionPlanningMasterDTO> list =   prodList(pressNo);
+		js.setResult1(list);
+		return js;*/
+		
+		return "ok";
+
+	}
+
+}

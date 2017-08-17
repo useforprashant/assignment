@@ -1,0 +1,379 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Assignment</title>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+
+var count =1;
+
+$(document).ready(function() {
+	
+	//$('#showTree').hide();
+	$('#treeView').hide();
+	
+	  $('.button_add_new_ques').click(function() {
+		  idd=count;
+	    $('#inner-right').append($('<div class="inner_d" id="inner_div_'+count+'"></div>')).append(('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px;" size="50" value="" class"assn" name="q_'+idd+'" id="q_'+idd+'">'),$('<select onchange="cq(this.value,this.id)" type="select"  id="dd_'+idd+'">').append('<option value="">'+'Select Choice</option>', '<option value="1">'+'Single Choice</option>','<option value="2">'+'Multiple Choice</option>' ,'<option value="3">'+'Multi-Line Text</option>'));
+	    count++;
+	    return false;
+	  });
+
+	  $(document).on('click', '.person', function() {
+	    $(this).children('p').toggle('slow');
+	  });
+
+	   $('#save').click(function(){
+		   var datastring = $("#myFm").serialize();
+		/*    var idNdVal = datastring.split("&");
+		  var sl = idNdVal.length;
+		  jsonObj = [];
+		  for(i=0;i<sl;i++){
+			  var idvl= idNdVal[i].split("=");
+			  
+			  var id = idvl[0];
+		        var val1 = idvl[1];
+			      item = {}
+		        item ["id"] = id;
+		        item ["value"] = val1;
+		       
+		        jsonObj.push(item);
+		        
+		  } */
+	     $.ajax({
+               type: "POST",
+               url: "saveValue",
+               data: {
+            	   datastring : datastring
+               },
+              
+               success: function(data) {
+                    alert(data);
+                    if(data == "data inserted successfully"){
+               	     $('#inner-right').empty();
+               	  $('#showTree').show();
+               		  }
+               }
+           });
+		  
+	  }); 
+	   
+	  $('#showTree').click(function(){
+		
+		  $('#treeView').show();
+		  $.ajax({
+              type: "GET",
+              url: "getValues",
+              
+              success: function(data) {
+            	var totalObject = data.split('N');	
+            	var lngth = parseInt(totalObject.length)-1;
+            	countout=0;
+            	countin = 0;
+                  for(i=0; i<lngth;i++){
+                	  var obj = totalObject[i];
+                	  var values = obj.split('and');
+                	  var idSplit = values[0].split('_'); 
+                	  var clsID = values[0].split(':');
+                	  var ids = values[0].split(':');
+                	alert(values[0]);
+                	  
+                	  if(idSplit.length == 2){
+                		 var val1 = values[1].split(':');
+                		  $('#inner-rightTree').append('<ul class="'+clsID[1]+'" id="ul_'+idSplit[1]+'"><span class="tab">'+val1[1]+'</span></ul>');
+                	  }
+                	  else{
+                		  var type = values[2].split(':');
+                		  var x = type[1];
+                		  var cls = "u_"+idSplit[1];
+                		  if(x == 1){
+                			  var val1 = values[1].split(':');
+                			$("#inner-rightTree ").append('<ul id="ul_'+idSplit[1]+'"><span class="tab">'+val1[1]+'</span></ul>');
+                    	  }
+                		  else{
+                		  var val1 = values[1].split(':');
+                		  //$("#ul_'+idSplit[1]+'").append('<li id="li_'+idSplit[1]+'"><span class="tab">'+"Prashabnt"+'</span></li>');
+                		//  $("#inner-rightTree ul").append('<li><span class="tab">'+val1[1]+'</span></li>');
+                		  }
+                		  }
+                  }
+                  
+              }
+          });
+	  }); 
+	  
+	   /*  $("form").submit(function() {
+	    	alert('save');
+		   var urlVal = document.forms["myFm"].submit();
+			alert(urlVal);
+		  return false; 
+	    });
+ */
+ 
+ $('#cancel').click(function(){
+	 if (confirm("Are you sure for cancel this survey without save?"))
+		{
+		 $('#inner-right').empty();
+		}
+	 
+ });
+
+});
+
+function sq(val,id){
+	var idd1 = id.split('_');
+	var idd2 = idd1[1];
+	var idd = id.substring(3);
+	/*  $('#inner_div_'+idd2+'').append($('<div class="inner_d" id="inner_div_'+count+'"></div>')).append(('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px;" size="50" value="" name="q_'+idd+'" id="q_'+idd+'">'),$('<select onchange="cq(this.value,this.id)" type="select"  id="dd_'+idd+'">').append( '<option value="1">'+'Single Choice</option>','<option value="2">'+'Multiple Choice</option>' ,'<option value="3">'+'Multi-Line Text</option>')); */
+	 $('#'+id).after(('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class"assn" name="q_'+idd+'" id="q_'+idd+'_1">'),$('<select onchange="cq(this.value,this.id)" type="select"  id="dd_'+idd+'">').append( '<option value="">'+'Select Choice</option>','<option value="1">'+'Single Choice</option>','<option value="2">'+'Multiple Choice</option>' ,'<option value="3">'+'Multi-Line Text</option>')); 
+	
+	    return false;
+	
+}
+
+function cq(val,id){
+
+	var idd = id.substring(3);
+	
+	if(val==1){
+		$('#'+id).after(('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_1" id="a_'+idd+'_1">'),$('<button onclick="sq(this.value,this.id)" type="button" class="button_add_sub_ques"  id="sq_'+idd+'_1">Add Sub Question</button>'));
+}
+	if(val==2){
+		$('#'+id).after('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_5" id="a_'+idd+'_5">');
+		$('#'+id).after('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_4" id="a_'+idd+'_4">');
+		$('#'+id).after('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_3" id="a_'+idd+'_3">');
+		$('#'+id).after('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_2" id="a_'+idd+'_2">');
+		$('#'+id).after('<input type="text" style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px;" size="50" value="" class="assn" name="a_'+idd+'_1" id="a_'+idd+'_1">');
+	}
+	if(val==3){
+		$('#'+id).after(('<textarea style="padding-top: 10px;	border-radius: 10px; margin-bottom: 5px; margin-left: 5px; width: 438px;" value="" class="assn" name="a_'+idd+'_1" id="a_'+idd+'_1">'));
+	}
+
+}
+function createJSON() {
+	  jsonObj = [];
+    $("input[class=assn]").each(function() {
+    	alert("Json");
+    	  
+        var id = $(this).attr("title");
+        var assn = $(this).val();
+
+        item = {}
+        item ["title"] = id;
+        item ["value"] = assn;
+
+        jsonObj.push(item);
+        
+    });
+
+    console.log(jsonObj);
+}
+
+
+</script>
+<style>
+h1 {
+    orphans: 3;
+    widows: 3;
+  color: #008CBA;
+  }
+
+  html, body {
+    height: 90%;    
+}
+
+.inner_d{
+ margin-left: 20px;
+}
+
+#wrapper {
+    height: 100%;
+    display: table;
+    width: 700px;
+}
+#header, #footer {
+    display: table-row;
+    height: 20px;
+}
+#body {
+    height: 70%;
+    display: table-row;
+    background: rgba(211, 220, 198, 1);
+}
+#left-col, #right-col {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin-right: 20px;
+    border: 2px black solid;
+    vertical-align: top;
+    overflow: hidden;
+}
+#inner-right {
+    height: 100%;
+    max-height: 500px;
+    overflow-y: scroll;
+    background: rgba(211, 220, 198, 1);
+}
+
+.button_save {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button_cancel {
+   /*  background-color: #008CBA; */
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button_add_new_ques {
+   /*  background-color: #008CBA; */
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button_add_sub_ques {
+    background: rgba(211, 220, 198, 1);
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+#wrapperTree {
+    height: 100%;
+    display: table;
+    width: 700px;
+}
+#headerTree, #footerTree {
+    display: table-row;
+    height: 20px;
+}
+#bodyTree {
+    height: 70%;
+    display: table-row;
+    background: rgba(211, 220, 198, 1);
+}
+#left-colTree, #right-colTree {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin-right: 20px;
+    border: 2px black solid;
+    vertical-align: top;
+    overflow: hidden;
+}
+#inner-rightTree {
+    height: 100%;
+    max-height: 700px;
+    overflow-y: scroll;
+    background: rgba(211, 220, 198, 1);
+}
+
+.button_ok {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+</style>	
+</head>
+<body>
+<form style="height: 500px;" id="myFm" name="myForm"  action="">
+<h1>ADD NEW CALL</h1>
+
+<div id="wrapper">
+    
+    <div id="body">
+       
+        <div id="right-col">
+          
+            <div id="inner-right">
+            
+            
+              </div>
+        </div>
+    </div>
+    <div id="footer">
+<button type="button" style="float: right;"  class="button_add_new_ques">Add New Question</button>
+</div>
+    <div id="footer">
+    
+   
+<button type="button" id="save" class="button_save">Save</button>
+<!-- <input type="submit" class="button_save" value="save"  /> -->
+<button type="button" id="cancel" class="button_cancel">Cancel</button>
+
+<button type="button" id="showTree" class="show_tree">Show Structure</button>
+</div>
+</div>
+
+</form>
+
+<br><br><br>
+<div id="treeView">
+<form style="height: 700px;" id="myFm1" name="myForm1"  action="">
+<h1>Tree View</h1>
+
+<div id="wrapperTree">
+    
+    <div id="bodyTree">
+       
+        <div id="right-colTree">
+          
+            <div id="inner-rightTree">
+            
+            
+              </div>
+        </div>
+    </div>
+    <div id="footerTree">
+<button type="button" style="float: right;"  class="button_ok">OK</button>
+</div>
+
+</div>
+
+</form>
+</div>
+</body>
+</html>

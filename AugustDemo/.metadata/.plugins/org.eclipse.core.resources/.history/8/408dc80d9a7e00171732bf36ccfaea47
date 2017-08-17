@@ -1,0 +1,5 @@
+package com.spring.daoInterface;
+
+public interface SurveyDaoInterface {
+
+}

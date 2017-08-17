@@ -1,0 +1,8 @@
+package com.spring.serviceInterface;
+
+import com.spring.model.SurveyModel;
+
+public interface SurveyServiceInterface {
+
+	public void save(SurveyModel model);
+}

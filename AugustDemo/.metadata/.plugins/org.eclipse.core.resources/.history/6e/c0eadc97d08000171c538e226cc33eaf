@@ -1,0 +1,8 @@
+package com.spring.daoInterface;
+
+import com.spring.model.SurveyModel;
+
+public interface SurveyDaoInterface {
+
+	public void save(SurveyModel model);
+}

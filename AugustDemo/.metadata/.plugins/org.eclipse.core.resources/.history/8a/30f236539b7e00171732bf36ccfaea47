@@ -1,0 +1,5 @@
+package com.spring.serviceInterface;
+
+public interface SurveyServiceInterface {
+
+}
