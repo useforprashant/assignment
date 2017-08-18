@@ -11,4 +11,6 @@ Today I've complete my assignment using following technologies:
 * Build & Deployment
 	o Github
 
-Total hours: 21 hours.			
+Total hours: 21 hours.	
+
+page url : http://localhost:8080/springProject/home		
